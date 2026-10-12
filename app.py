@@ -18,6 +18,7 @@ from src.charts import (
 from src.data_loader import load_snapshot
 from src.data_processing import DATA_URL, SOURCE_URL
 from src.metrics import SCORE_LABELS, calculate_kpis, pareto_frontier, provider_summary
+from src.theme import theme_css
 
 ROOT = Path(__file__).resolve().parent
 DATA_DIR = ROOT / "data"
@@ -26,34 +27,12 @@ st.set_page_config(
     page_title="ModelScope AI | Model Performance Explorer",
     page_icon="◈",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="auto",
 )
 
-st.markdown(
-    """
-    <style>
-    :root { color-scheme: dark; }
-    [data-testid="stAppViewContainer"] { background: #0b1018; }
-    [data-testid="stHeader"] { background: rgba(11,16,24,0.86); }
-    [data-testid="stSidebar"] { background: #101722; border-right: 1px solid #1d2938; }
-    .block-container { max-width: 1480px; padding-top: 2rem; padding-bottom: 3rem; }
-    .hero { padding: 0.35rem 0 1.2rem 0; }
-    .eyebrow { color: #6ea6ff; font-size: 0.72rem; letter-spacing: 0.15em; font-weight: 700; text-transform: uppercase; }
-    .hero h1 { color: #f4f7fb; font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.05; margin: 0.45rem 0 0.4rem 0; font-weight: 720; letter-spacing: -0.04em; }
-    .hero p { color: #96a4b8; font-size: 1rem; max-width: 760px; margin: 0; }
-    .section-title { color: #edf2f8; font-weight: 650; letter-spacing: -0.02em; }
-    [data-testid="stMetric"] { background: #121b27; border: 1px solid #233044; padding: 1rem 1.05rem; border-radius: 12px; }
-    [data-testid="stMetricLabel"] { color: #9aa9bc; }
-    [data-testid="stMetricValue"] { color: #f0f5fa; }
-    div[data-testid="stAlert"] { border-radius: 12px; }
-    div[data-testid="stDataFrame"] { border: 1px solid #233044; border-radius: 10px; overflow: hidden; }
-    .source-note { color: #8291a5; font-size: 0.78rem; }
-    a { color: #83b5ff !important; }
-    hr { border-color: #233044; }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+if "appearance_mode" not in st.session_state:
+    st.session_state["appearance_mode"] = "Dark"
+st.markdown(theme_css(st.session_state["appearance_mode"]), unsafe_allow_html=True)
 
 
 @st.cache_data(ttl=300, show_spinner="Loading the latest validated snapshot…")
@@ -99,9 +78,9 @@ def main() -> None:
     st.markdown(
         """
         <div class="hero">
-          <div class="eyebrow">TASK ACCURACY · COST · RESPONSE TIME</div>
+          <div class="eyebrow">MODEL PERFORMANCE · BUSINESS DOCUMENTS</div>
           <h1>ModelScope AI</h1>
-          <p>Explore accuracy, cost and response time across modern models on real business-document tasks.</p>
+          <p>Compare accuracy, cost and response time across real business-document tasks.</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -110,6 +89,14 @@ def main() -> None:
         f"{metadata.get('attribution', 'Based on data from ModelVerdict (CC BY 4.0)')} · "
         f"[Source and methodology]({SOURCE_URL})"
     )
+    st.segmented_control(
+        "Appearance",
+        options=["Light", "Dark"],
+        default="Dark",
+        key="appearance_mode",
+        help="Switch the dashboard between light and dark appearance.",
+    )
+    appearance = str(st.session_state["appearance_mode"])
 
     if data.empty:
         st.warning("No validated data snapshot is available yet. Run `python scripts/fetch_data.py` to retrieve the public dataset.")
@@ -121,6 +108,7 @@ def main() -> None:
 
     with st.sidebar:
         st.markdown("### Explore a cohort")
+        st.caption("Choose a task and refine the model set.")
         task = st.selectbox("Business task", tasks, index=tasks.index(default_task), format_func=pretty)
         task_data = data[data["task"].eq(task)]
         languages = sorted(task_data["language_code"].dropna().astype(str).unique())
@@ -154,9 +142,17 @@ def main() -> None:
         if selected_models:
             filtered = filtered[filtered["model_name"].isin(selected_models)]
 
-        filtered = apply_range_filter(filtered, score_column, SCORE_LABELS[score_column], 0.01)
-        filtered = apply_range_filter(filtered, "cost_usd_per_1000_documents", "Cost per 1,000 documents (USD)", 0.05)
-        filtered = apply_range_filter(filtered, "latency_p50_ms", "Median response time p50 (ms)", 100.0)
+        with st.expander("Accuracy, cost & speed ranges", expanded=False):
+            filtered = apply_range_filter(filtered, score_column, SCORE_LABELS[score_column], 0.01)
+            filtered = apply_range_filter(
+                filtered,
+                "cost_usd_per_1000_documents",
+                "Cost per 1,000 documents (USD)",
+                0.05,
+            )
+            filtered = apply_range_filter(
+                filtered, "latency_p50_ms", "Median response time p50 (ms)", 100.0
+            )
 
     if filtered.empty:
         st.info("No models match these filters. Expand or clear one of the selections in the sidebar.")
@@ -180,7 +176,10 @@ def main() -> None:
         f"{frontier_count} model(s) are Pareto-efficient on {score_label.lower()} and cost. "
         "A frontier model is not universally better; it is not beaten on both measures within this cohort."
     )
-    st.plotly_chart(accuracy_cost_chart(efficient, score_column, score_label), use_container_width=True)
+    st.plotly_chart(
+        accuracy_cost_chart(efficient, score_column, score_label, appearance),
+        use_container_width=True,
+    )
 
     cost_tab, speed_tab, provider_tab, compare_tab, explorer_tab = st.tabs(
         ["Cost analysis", "Response time", "Provider analysis", "Compare models", "Model Explorer"]
@@ -192,17 +191,20 @@ def main() -> None:
         top_n = int(control_columns[0].number_input("Top N", min_value=1, max_value=max_rows, value=min(10, max_rows), step=1))
         order = control_columns[1].selectbox("Order", ["Highest cost", "Lowest cost"])
         control_columns[2].caption("Cost is actual API token spend scaled to 1,000 documents for the selected task and cohort.")
-        st.plotly_chart(cost_rank_chart(filtered, top_n, order), use_container_width=True)
+        st.plotly_chart(cost_rank_chart(filtered, top_n, order, appearance), use_container_width=True)
         st.caption("A higher document cost can still be preferable when it materially improves task accuracy; compare both axes.")
 
     with speed_tab:
         left, right = st.columns(2)
         left.markdown("##### Accuracy and response time")
         left.caption("Median response time p50 is the typical end-to-end time for a valid response in this run.")
-        left.plotly_chart(accuracy_latency_chart(filtered, score_column, score_label), use_container_width=True)
+        left.plotly_chart(
+            accuracy_latency_chart(filtered, score_column, score_label, appearance),
+            use_container_width=True,
+        )
         right.markdown("##### Typical and slower responses")
         right.caption("P50 marks the median; p90 marks the slower tail. These are whole-response times, not time-to-first-token or tokens/second.")
-        right.plotly_chart(latency_distribution_chart(filtered), use_container_width=True)
+        right.plotly_chart(latency_distribution_chart(filtered, appearance), use_container_width=True)
 
     summary = provider_summary(filtered, score_column)
     with provider_tab:
@@ -210,7 +212,7 @@ def main() -> None:
             st.info("Provider summaries are not available for this cohort.")
         else:
             left, right = st.columns([1.1, 1])
-            left.plotly_chart(provider_cost_chart(summary), use_container_width=True)
+            left.plotly_chart(provider_cost_chart(summary, appearance), use_container_width=True)
             display_summary = summary.copy()
             display_summary["Median accuracy"] = display_summary["Median accuracy"].map(lambda value: metric_display(value, "accuracy"))
             display_summary["Median cost / 1k docs"] = display_summary["Median cost / 1k docs"].map(lambda value: metric_display(value, "cost"))

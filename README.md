@@ -15,6 +15,7 @@
 - Highlight a Pareto frontier within the selected task/language/format cohort.
 - Compare median and p90 response times and field/document accuracy.
 - Review provider medians, ranked costs, and a sortable model explorer.
+- Switch between light and dark appearance; refine numeric ranges inside the sidebar.
 - Download the current filtered cohort with source metadata.
 - Refresh the public snapshot with GitHub Actions; run locally or in Docker.
 
