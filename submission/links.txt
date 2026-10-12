@@ -16,13 +16,13 @@ PUBLIC REPOSITORY
 https://github.com/iovargasjeff/ModelScope-AI
 
 LIVE DASHBOARD
-PENDING
+https://modelscope-ai.streamlit.app/
 
-ARTICLE
-PENDING
+ARTICLE DRAFT
+https://github.com/iovargasjeff/ModelScope-AI/blob/main/articles/technical_article_draft.md
 
-VIDEO
-PENDING
+VIDEO SCRIPT
+https://github.com/iovargasjeff/ModelScope-AI/blob/main/articles/video_script.md
 
 CI/CD
 GitHub Actions + Streamlit Community Cloud

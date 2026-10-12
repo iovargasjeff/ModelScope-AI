@@ -6,7 +6,7 @@
 
 ## Live Demo
 
-Pending Streamlit Community Cloud deployment.
+[Launch ModelScope AI](https://modelscope-ai.streamlit.app/)
 
 ## Features
 
@@ -144,8 +144,6 @@ Dashboard data: **ModelVerdict**, licensed under **CC BY 4.0**. Credit: [ModelVe
 
 Benchmark scores are tied to the source's prompts, synthetic document set, model versions, provider settings, language, format, and run date. They do not guarantee performance on other data or tasks. For very close scores, review the source methodology and sample size.
 
-## Screenshots
+## Preview
 
-<!-- Add a current screenshot after the public deployment is available. -->
-
-`[Dashboard screenshot pending]`
+The public dashboard is available at [modelscope-ai.streamlit.app](https://modelscope-ai.streamlit.app/).
