@@ -50,164 +50,118 @@ def theme_tokens(mode: str) -> dict[str, object]:
 
 
 def theme_css(mode: str) -> str:
-    """Build responsive Streamlit CSS from the shared appearance tokens."""
+    """Style actual Streamlit controls without adding borders to their children."""
     colors = theme_tokens(mode)
-    return f"""
-    <style>
-    :root {{
-      color-scheme: {colors['scheme']};
-      --ms-bg: {colors['background']};
-      --ms-sidebar: {colors['sidebar']};
-      --ms-panel: {colors['panel']};
-      --ms-control: {colors['control']};
-      --ms-text: {colors['text']};
-      --ms-muted: {colors['muted']};
-      --ms-border: {colors['border']};
-      --ms-accent: {colors['accent']};
-      --ms-on-accent: {colors['on_accent']};
-      --ms-link: {colors['link']};
-      --ms-grid: {colors['grid']};
-    }}
-    html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {{
-      background: var(--ms-bg) !important;
-      color: var(--ms-text) !important;
-      transition: background-color 180ms ease, color 180ms ease;
-    }}
-    [data-testid="stHeader"], [data-testid="stToolbar"] {{ background: transparent; }}
-    [data-testid="stSidebar"], [data-testid="stSidebar"] > div:first-child {{
-      background: var(--ms-sidebar) !important;
-      border-right: 1px solid var(--ms-border);
-    }}
-    .block-container {{
-      max-width: 1500px;
-      padding-top: 1.35rem;
-      padding-bottom: 3rem;
-    }}
-    .hero {{ padding: 0.2rem 0 0.8rem; }}
-    .eyebrow {{
-      color: var(--ms-accent);
-      font-size: 0.72rem;
-      letter-spacing: 0.15em;
-      font-weight: 750;
-      text-transform: uppercase;
-    }}
-    .hero h1 {{
-      color: var(--ms-text);
-      font-size: clamp(2rem, 4vw, 3.2rem);
-      line-height: 1.05;
-      margin: 0.45rem 0 0.4rem;
-      font-weight: 740;
-      letter-spacing: -0.045em;
-    }}
-    .hero p {{ color: var(--ms-muted); font-size: 1rem; max-width: 780px; margin: 0; }}
-    .section-title {{ color: var(--ms-text); font-weight: 680; letter-spacing: -0.02em; }}
-    [data-testid="stMetric"] {{
-      background: var(--ms-panel);
-      border: 1px solid var(--ms-border);
-      padding: 1rem 1.05rem;
-      border-radius: 15px;
-      box-shadow: 0 7px 20px rgba(17, 29, 47, 0.06);
-    }}
-    [data-testid="stMetricLabel"] {{ color: var(--ms-muted) !important; }}
-    [data-testid="stMetricValue"] {{ color: var(--ms-text) !important; }}
-    [data-testid="stCaptionContainer"] p, .source-note {{ color: var(--ms-muted) !important; }}
-    [data-testid="stWidgetLabel"] p {{ color: var(--ms-text) !important; }}
-    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3 {{
-      color: var(--ms-text);
-      letter-spacing: -0.02em;
-    }}
-    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {{ color: var(--ms-muted); }}
-    [data-testid="stTextInput"] input,
-    [data-testid="stNumberInput"] input,
-    [data-testid="stDateInput"] input,
-    [data-testid="stTimeInput"] input,
-    [data-testid="stTextArea"] textarea,
-    [data-testid="stSelectbox"] [data-baseweb="select"],
-    [data-testid="stSelectbox"] [data-baseweb="select"] > div,
-    [data-testid="stSelectbox"] [data-baseweb="select"] > div > div,
-    [data-testid="stMultiSelect"] [data-baseweb="select"],
-    [data-testid="stMultiSelect"] [data-baseweb="select"] > div,
-    [data-testid="stMultiSelect"] [data-baseweb="select"] > div > div,
-    div[data-baseweb="select"] > div {{
-      background: var(--ms-control) !important;
-      color: var(--ms-text) !important;
-      border-color: var(--ms-border) !important;
-      border-radius: 10px;
-    }}
-    [data-testid="stSelectbox"] [role="combobox"],
-    [data-testid="stSelectbox"] button[aria-haspopup="listbox"],
-    [data-testid="stMultiSelect"] [role="combobox"],
-    [data-testid="stMultiSelect"] button[aria-haspopup="listbox"] {{
-      background: var(--ms-control) !important;
-      color: var(--ms-text) !important;
-      border: 1px solid var(--ms-border) !important;
-      border-radius: 10px !important;
-    }}
-    [role="combobox"] {{
-      background: var(--ms-control) !important;
-      color: var(--ms-text) !important;
-      border-color: var(--ms-border) !important;
-    }}
-    [data-testid="stMultiSelect"] {{
-      background: var(--ms-control) !important;
-      color: var(--ms-text) !important;
-      border: 1px solid var(--ms-border) !important;
-      border-radius: 10px !important;
-    }}
-    [data-testid="stMultiSelect"] input {{
+    variables = "\n".join(f"--ms-{key.replace('_', '-')}: {value};" for key, value in colors.items() if isinstance(value, str))
+    return "<style>:root { color-scheme: " + str(colors["scheme"]) + ";" + variables + "}" + """
+    [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-testid="stMain"] {
+      background: var(--ms-background); color: var(--ms-text);
+    }
+    [data-testid="stHeader"] { background: var(--ms-background); }
+    [data-testid="stSidebar"], [data-testid="stSidebarContent"] {
+      background: var(--ms-sidebar); color: var(--ms-text);
+    }
+    [data-testid="stSidebar"] { border-right: 1px solid var(--ms-border); }
+    .block-container { max-width: 1500px; padding: 4.5rem 2rem 3rem; }
+    .hero { padding: 0 0 0.7rem; }
+    .eyebrow { color: var(--ms-accent); font-size: .72rem; letter-spacing: .13em; font-weight: 700; }
+    .hero h1 { color: var(--ms-text); font-size: clamp(2rem, 4vw, 3rem); line-height: 1.12;
+      margin: .45rem 0 .65rem; letter-spacing: -.045em; }
+    .hero p { color: var(--ms-muted); max-width: 780px; margin: 0; line-height: 1.6; }
+    [data-testid="stMarkdownContainer"], [data-testid="stMarkdownContainer"] p,
+    [data-testid="stMarkdownContainer"] h1, [data-testid="stMarkdownContainer"] h2,
+    [data-testid="stMarkdownContainer"] h3, [data-testid="stMarkdownContainer"] h4,
+    [data-testid="stMarkdownContainer"] h5, [data-testid="stWidgetLabel"] { color: var(--ms-text); }
+    [data-testid="stCaptionContainer"] { opacity: 1 !important; }
+    [data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] p, .source-note {
+      color: var(--ms-muted) !important; line-height: 1.6;
+    }
+    .hero p { color: var(--ms-muted) !important; }
+    a { color: var(--ms-link) !important; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin: .3rem 0 1.5rem; }
+    .kpi-card { background: var(--ms-panel); border: 1px solid var(--ms-border);
+      border-radius: 14px; padding: 1.1rem; min-width: 0; }
+    .kpi-label { color: var(--ms-muted); font-size: .84rem; line-height: 1.4; }
+    .kpi-value { color: var(--ms-text); font-size: clamp(1.6rem, 3vw, 2rem); font-weight: 650;
+      line-height: 1.2; margin-top: .55rem; overflow-wrap: anywhere; }
+    /* React Aria paints the field wrapper; inputs and arrow buttons stay transparent. */
+    :is([data-testid="stSelectbox"], [data-testid="stMultiSelect"]) .react-aria-ComboBox > [role="group"] {
+      background: var(--ms-control) !important; color: var(--ms-text) !important;
+      border: 1px solid var(--ms-border) !important; border-radius: 10px !important;
+    }
+    :is([data-testid="stSelectbox"], [data-testid="stMultiSelect"]) input,
+    :is([data-testid="stSelectbox"], [data-testid="stMultiSelect"]) button {
+      color: var(--ms-text) !important; background: transparent !important; border: 0 !important;
+      box-shadow: none !important; border-radius: 0 !important;
+    }
+    [data-testid="stMultiSelect"] [data-tag] {
+      background: var(--ms-accent) !important; color: var(--ms-on-accent) !important;
+      border-radius: 5px;
+    }
+    [data-testid="stMultiSelect"] [data-tag] *, [data-testid="stMultiSelect"] [data-tag] button {
+      color: var(--ms-on-accent) !important;
+    }
+    [data-testid="stTextInputRootElement"], [data-testid="stNumberInputContainer"] {
+      background: var(--ms-control) !important; border-color: var(--ms-border) !important; border-radius: 10px;
+    }
+    [data-testid="stTextInputRootElement"] input, [data-testid="stNumberInputContainer"] input {
       background: transparent !important;
-      color: var(--ms-text) !important;
-    }}
-    [data-testid="stMultiSelect"] input::placeholder,
-    [data-testid="stMultiSelect"] [data-placeholder="true"] {{
+    }
+    [data-testid="stTooltipIcon"] button, [data-testid="stNumberInputContainer"] button {
+      color: var(--ms-muted) !important; background: transparent !important;
+    }
+    [data-testid="stTooltipIcon"] svg { stroke: var(--ms-muted) !important; }
+    [data-testid="stSlider"] [data-rac][style*="position: relative"] {
+      background: var(--ms-border) !important;
+    }
+    [data-testid="stSlider"] [data-rac][style*="position: relative"] > div:first-child,
+    [data-testid="stSlider"] div[data-rac]:has(> div > input[type="range"]) {
+      background: var(--ms-accent) !important;
+    }
+    [data-testid="stDownloadButton"] button {
+      background: var(--ms-panel); color: var(--ms-text); border-color: var(--ms-border);
+    }
+    input, textarea { color: var(--ms-text) !important; }
+    input::placeholder, textarea::placeholder { color: var(--ms-muted) !important; opacity: 1 !important; }
+    [role="listbox"] { background: var(--ms-panel) !important; color: var(--ms-text) !important;
+      border: 1px solid var(--ms-border); border-radius: 10px; }
+    [role="option"] { color: var(--ms-text) !important; }
+    [role="option"][data-focused="true"], [role="option"][aria-selected="true"] {
+      background: var(--ms-sidebar) !important;
+    }
+    .st-key-appearance_mode [role="radiogroup"] { gap: .5rem; }
+    .st-key-appearance_mode [data-testid="stRadioOption"] { border: 1px solid var(--ms-border); background: var(--ms-panel);
+      border-radius: 8px; padding: .4rem .8rem; margin: 0; }
+    .st-key-appearance_mode [data-testid="stRadioOption"]:has(input:checked) { background: var(--ms-accent); border-color: var(--ms-accent); }
+    .st-key-appearance_mode [data-testid="stRadioOption"]:has(input:checked) p { color: var(--ms-on-accent) !important; font-weight: 650; }
+    .st-key-appearance_mode [data-testid="stRadioOption"] > div > div:first-child { display: none; }
+    button:focus-visible, input:focus-visible, .st-key-appearance_mode [data-testid="stRadioOption"]:has(input:focus-visible) {
+      outline: 2px solid var(--ms-accent) !important; outline-offset: 3px;
+    }
+    [data-testid="stSidebarCollapseButton"] { opacity: 1 !important; visibility: visible !important; }
+    [data-testid="stSidebarCollapseButton"] button,
+    [data-testid="stSidebarCollapseButton"] span, [data-testid="stExpandSidebarButton"] span,
+    [data-testid="stToolbar"] button, [data-testid="stToolbar"] span {
       color: var(--ms-muted) !important;
-      opacity: 1 !important;
-    }}
-    [data-testid="stMultiSelect"] div:has(input) {{
-      background: var(--ms-control) !important;
-      color: var(--ms-text) !important;
-      border-color: var(--ms-border) !important;
-    }}
-    [data-testid="stSelectbox"] [data-baseweb="select"] *,
-    [data-testid="stMultiSelect"] [data-baseweb="select"] * {{ color: var(--ms-text); }}
-    [data-testid="stMultiSelect"] [data-baseweb="tag"] {{
-      background: var(--ms-accent) !important;
-      color: var(--ms-on-accent) !important;
-      border-color: transparent !important;
-    }}
-    [data-testid="stMultiSelect"] [data-baseweb="tag"] * {{ color: var(--ms-on-accent) !important; }}
-    [data-testid="stSelectbox"] [data-baseweb="select"] svg,
-    [data-testid="stMultiSelect"] [data-baseweb="select"] svg {{ fill: var(--ms-muted); }}
-    [data-testid="stTextInput"] input::placeholder {{ color: var(--ms-muted) !important; }}
-    div[data-baseweb="popover"], div[data-baseweb="popover"] ul {{
-      background: var(--ms-panel) !important;
-      color: var(--ms-text) !important;
-      border-color: var(--ms-border) !important;
-    }}
-    div[data-baseweb="popover"] li {{ color: var(--ms-text) !important; }}
-    [data-testid="stTabs"] button {{ color: var(--ms-muted); }}
-    [data-testid="stTabs"] button[aria-selected="true"] {{
-      color: var(--ms-accent) !important;
-      border-bottom-color: var(--ms-accent) !important;
-    }}
-    [data-testid="stSegmentedControl"] {{ color: var(--ms-text); }}
-    [data-testid="stSegmentedControl"] button {{ color: var(--ms-muted); }}
-    [data-testid="stSegmentedControl"] button[aria-pressed="true"] {{
-      color: var(--ms-on-accent) !important;
-      background: var(--ms-accent) !important;
-      border-color: var(--ms-accent) !important;
-    }}
-    [data-testid="stDataFrame"] {{
-      border: 1px solid var(--ms-border);
-      border-radius: 12px;
-      overflow: hidden;
-    }}
-    div[data-testid="stAlert"] {{ border-radius: 12px; }}
-    a {{ color: var(--ms-link) !important; }}
-    hr, [data-testid="stDivider"] {{ border-color: var(--ms-border) !important; }}
-    @media (max-width: 760px) {{
-      .block-container {{ padding: 1rem 1rem 2rem; }}
-      .hero {{ padding-bottom: 0.4rem; }}
-    }}
+    }
+    [data-testid="stExpander"] details { border-color: var(--ms-border); background: var(--ms-sidebar); }
+    [data-testid="stExpander"] summary, [data-testid="stExpander"] summary p { color: var(--ms-text) !important; }
+    [data-testid="stTabs"] [role="tab"] { color: var(--ms-muted) !important; }
+    [data-testid="stTabs"] [role="tab"][aria-selected="true"] { color: var(--ms-accent) !important; }
+    [data-testid="stTabsScrollRight"], [data-testid="stTabsScrollLeft"] {
+      background: var(--ms-background) !important; color: var(--ms-text) !important;
+    }
+    .ms-table { overflow: auto; max-height: 520px; border: 1px solid var(--ms-border); border-radius: 12px; }
+    .ms-table table { width: 100%; border-collapse: collapse; background: var(--ms-panel); color: var(--ms-text); font-size: .88rem; }
+    .ms-table th { position: sticky; top: 0; background: var(--ms-sidebar); color: var(--ms-text); text-align: left; z-index: 1; }
+    .ms-table td, .ms-table th { padding: .75rem 1rem; border-bottom: 1px solid var(--ms-border); white-space: nowrap; }
+    .ms-table tbody tr:hover { background: var(--ms-sidebar); }
+    hr { border-color: var(--ms-border) !important; }
+    @media (max-width: 1150px) { .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 1000px) { .block-container { padding-left: 1.25rem; padding-right: 1.25rem; } }
+    @media (max-width: 640px) { .block-container { padding: 4rem 1rem 2rem; }
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; }
+      .kpi-card { padding: .9rem; } .hero h1 { font-size: 2rem; }
+    }
     </style>
     """

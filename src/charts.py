@@ -2,17 +2,27 @@
 
 from __future__ import annotations
 
+import hashlib
+
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
 from src.theme import theme_tokens
 
+PROVIDERS = ("Anthropic", "DeepSeek", "Google", "Mistral", "OpenAI", "Qwen", "Z.ai")
+
 
 def _provider_color_map(frame: pd.DataFrame, theme: str, column: str = "provider") -> dict[str, str]:
     palette = theme_tokens(theme)["chart_colors"]
     providers = sorted(frame[column].dropna().astype(str).unique())
-    return {provider: palette[index % len(palette)] for index, provider in enumerate(providers)}
+    return {
+        provider: palette[
+            (PROVIDERS.index(provider) if provider in PROVIDERS else int.from_bytes(
+                hashlib.sha256(provider.encode()).digest()[:4], "big"
+            )) % len(palette)
+        ] for provider in providers
+    }
 
 
 def _style(fig: go.Figure, height: int = 380, theme: str = "Dark") -> go.Figure:
@@ -24,6 +34,7 @@ def _style(fig: go.Figure, height: int = 380, theme: str = "Dark") -> go.Figure:
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         font=dict(family="Inter, Segoe UI, sans-serif", color=colors["text"], size=12),
+        modebar=dict(bgcolor=colors["panel"], color=colors["muted"], activecolor=colors["accent"]),
         legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -32,6 +43,7 @@ def _style(fig: go.Figure, height: int = 380, theme: str = "Dark") -> go.Figure:
             x=0,
             bgcolor="rgba(0,0,0,0)",
             font=dict(color=colors["muted"]),
+            title=dict(font=dict(color=colors["text"])),
         ),
         hoverlabel=dict(
             bgcolor=colors["panel"],

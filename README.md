@@ -15,7 +15,9 @@
 - Highlight a Pareto frontier within the selected task/language/format cohort.
 - Compare median and p90 response times and field/document accuracy.
 - Review provider medians, ranked costs, and a sortable model explorer.
-- Switch between light and dark appearance; refine numeric ranges inside the sidebar.
+- Switch between light and dark appearance across controls, charts, and tables, with responsive KPI cards.
+- Refine independent accuracy, cost, and response-time ranges in a collapsible sidebar section.
+- Keep provider colors consistent across charts and sort the model explorer by any column.
 - Download the current filtered cohort with source metadata.
 - Refresh the public snapshot with GitHub Actions; run locally or in Docker.
 
