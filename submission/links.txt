@@ -1,0 +1,28 @@
+AI MODEL PERFORMANCE DASHBOARD
+
+Student:
+Jefferson Vargas
+
+Project:
+ModelScope AI
+
+Visualization:
+Streamlit + Plotly
+
+Data Source:
+ModelVerdict public leaderboard (CC BY 4.0)
+
+PUBLIC REPOSITORY
+https://github.com/JeffersonVargas0/ModelScope-AI
+
+LIVE DASHBOARD
+PENDING
+
+ARTICLE
+PENDING
+
+VIDEO
+PENDING
+
+CI/CD
+GitHub Actions + Streamlit Community Cloud
