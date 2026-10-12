@@ -1,0 +1,15 @@
+{
+  "source": "https://modelverdict.ai",
+  "data_url": "https://modelverdict.ai/data/leaderboards.json",
+  "license": "CC BY 4.0",
+  "attribution": "Based on data from ModelVerdict (CC BY 4.0)",
+  "run_id": "20261010T220935Z-c30495",
+  "run_date": "2026-10-10",
+  "dataset_version": "0.1.0",
+  "fetched_at_utc": "2026-10-12T17:06:19+00:00",
+  "status": "healthy",
+  "row_count": 1050,
+  "model_count": 14,
+  "provider_count": 7,
+  "cohort_count": 75
+}
