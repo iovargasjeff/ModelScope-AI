@@ -53,7 +53,7 @@ Python · Streamlit · Plotly · Pandas · Requests · pytest · Ruff · Docker 
 Requirements: Python 3.12+.
 
 ```bash
-git clone https://github.com/JeffersonVargas0/ModelScope-AI.git
+git clone https://github.com/iovargasjeff/ModelScope-AI.git
 cd ModelScope-AI
 python -m venv .venv
 ```
@@ -99,7 +99,7 @@ The data refresh schedule is more frequent than the source's weekly publication 
 
 1. Push this repository to GitHub.
 2. Sign in to [Streamlit Community Cloud](https://share.streamlit.io) and choose **Create app**.
-3. Select `JeffersonVargas0/ModelScope-AI`, branch `main`, and entry point `app.py`.
+3. Select `iovargasjeff/ModelScope-AI`, branch `main`, and entry point `app.py`.
 4. Deploy. The app uses the tracked snapshot and does not require secrets.
 
 Community Cloud watches the connected branch and updates the app when new commits arrive.

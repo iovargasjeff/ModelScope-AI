@@ -13,7 +13,7 @@ Data Source:
 ModelVerdict public leaderboard (CC BY 4.0)
 
 PUBLIC REPOSITORY
-https://github.com/JeffersonVargas0/ModelScope-AI
+https://github.com/iovargasjeff/ModelScope-AI
 
 LIVE DASHBOARD
 PENDING

@@ -75,7 +75,7 @@ GitHub Actions runs CI on pushes and pull requests. A separate daily workflow ch
 
 ## Links
 
-- GitHub repository: https://github.com/JeffersonVargas0/ModelScope-AI
+- GitHub repository: https://github.com/iovargasjeff/ModelScope-AI
 - Live dashboard: `[URL]`
 - Data and methodology: [ModelVerdict open data](https://modelverdict.ai/en/data/) · [methodology](https://modelverdict.ai/en/methodology/)
 - Article: `[URL]`
